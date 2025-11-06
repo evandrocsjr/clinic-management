@@ -1,4 +1,5 @@
 ﻿using DDDProject.Domain;
+using DDDProject.Domain.Entities;
 
 namespace Wpm.Mangament.Api.Application;
 

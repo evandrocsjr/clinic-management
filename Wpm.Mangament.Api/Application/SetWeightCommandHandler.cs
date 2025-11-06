@@ -1,5 +1,5 @@
 ﻿using DDDProject.Domain;
-using Wpm.Management.Api.Infrastructure;
+using Wpm.Mangament.Api.Infrastructure;
 
 namespace Wpm.Mangament.Api.Application;
 

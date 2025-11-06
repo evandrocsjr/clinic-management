@@ -1,6 +1,7 @@
 ﻿using DDDProject.Domain.ValueObjects;
+using Wpm.SharedKernel;
 
-namespace DDDProject.Domain;
+namespace DDDProject.Domain.Entities;
 
 public class Breed : Entity
 {

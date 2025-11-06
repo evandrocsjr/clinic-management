@@ -1,5 +1,4 @@
-﻿using DDDProject.Domain;
-using Wpm.Clinic.Domain.ValuesObjects;
+﻿using Wpm.Clinic.Domain.ValuesObjects;
 using Wpm.SharedKernel;
 
 namespace Wpm.Clinic.Domain;

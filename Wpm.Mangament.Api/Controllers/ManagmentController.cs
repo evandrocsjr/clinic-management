@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Wpm.Mangament.Api.Application;
 
-namespace Wpm.Management.Api.Controllers;
+namespace Wpm.Mangament.Api.Controllers;
 
 [Route("v1/management")]
 [ApiController]

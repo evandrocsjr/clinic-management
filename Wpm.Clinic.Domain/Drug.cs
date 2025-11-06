@@ -1,4 +1,4 @@
-﻿using DDDProject.Domain;
+﻿using Wpm.SharedKernel;
 
 namespace Wpm.Clinic.Domain;
 

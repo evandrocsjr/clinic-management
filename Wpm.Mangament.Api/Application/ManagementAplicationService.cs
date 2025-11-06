@@ -1,6 +1,7 @@
 ﻿using DDDProject.Domain;
+using DDDProject.Domain.Entities;
 using DDDProject.Domain.ValueObjects;
-using Wpm.Management.Api.Infrastructure;
+using Wpm.Mangament.Api.Infrastructure;
 
 namespace Wpm.Mangament.Api.Application;
 

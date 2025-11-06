@@ -1,7 +1,8 @@
 ﻿using DDDProject.Domain;
+using DDDProject.Domain.Entities;
 using DDDProject.Domain.ValueObjects;
 
-namespace Wpm.Management.Api.Infrastructure;
+namespace Wpm.Mangament.Api.Infrastructure;
 
 public class BreedService : IBreedService
 {

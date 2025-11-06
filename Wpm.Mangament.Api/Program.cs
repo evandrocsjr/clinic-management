@@ -1,7 +1,7 @@
 using DDDProject.Domain;
 using Microsoft.EntityFrameworkCore;
-using Wpm.Management.Api.Infrastructure;
 using Wpm.Mangament.Api.Application;
+using Wpm.Mangament.Api.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();

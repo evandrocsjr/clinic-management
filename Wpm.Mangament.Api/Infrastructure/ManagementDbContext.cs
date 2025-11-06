@@ -1,8 +1,9 @@
 ﻿using DDDProject.Domain;
+using DDDProject.Domain.Entities;
 using DDDProject.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
-namespace Wpm.Management.Api.Infrastructure;
+namespace Wpm.Mangament.Api.Infrastructure;
 
 public class ManagementDbContext : DbContext
 {

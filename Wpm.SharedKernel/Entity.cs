@@ -1,4 +1,4 @@
-﻿namespace DDDProject.Domain;
+﻿namespace Wpm.SharedKernel;
 
 public class Entity : IEquatable<Entity>
 {

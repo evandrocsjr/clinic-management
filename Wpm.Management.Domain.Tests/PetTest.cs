@@ -1,4 +1,5 @@
-﻿using DDDProject.Domain.ValueObjects;
+﻿using DDDProject.Domain.Entities;
+using DDDProject.Domain.ValueObjects;
 using Wpm.SharedKernel;
 using Xunit;
 
