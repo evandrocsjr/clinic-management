@@ -1,4 +1,5 @@
-﻿using Wpm.Clinic.Domain.ValuesObjects;
+﻿using Wpm.Clinic.Domain.Entities;
+using Wpm.Clinic.Domain.ValuesObjects;
 
 namespace Wpm.Clinic.Api.Commands;
 
@@ -16,5 +17,10 @@ public record AdministerDrugCommand(Guid ConsultationId, Guid DrugId, decimal Qu
 
 public record RegisterVitalSignsCommand(Guid ConsultationId, IEnumerable<VitalSigns> VitalSigns);
 
-
-
+public record VitalSignsReading(
+    DateTime ReadingDateTime,
+    decimal Temperature,
+    int HeartRate,
+    int RespiratoryRate
+    );
+    

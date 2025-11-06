@@ -1,24 +1,22 @@
 ﻿using Wpm.Clinic.Domain.ValuesObjects;
 using Wpm.SharedKernel;
 
-namespace Wpm.Clinic.Domain;
+namespace Wpm.Clinic.Domain.Entities;
 
 public class Consultation : AggregateRoot
 {
     private readonly List<DrugAdministration> administeredDrugs = new();
     private readonly List<VitalSigns> vitalSignsReadings = new();
     
-    public Text Diagnosis { get; private set; }
+    public Text? Diagnosis { get; private set; }
     
-    public Text Treatment { get; private set; }
+    public Text? Treatment { get; private set; }
     
-    public DateTime StatedAt { get; init; }
-    
-    public DateTime? EndedAt { get; private set; }
+    public DateTimeRange When { get; private set; }
     
     public PatientId PatientId { get; init; }
     
-    public Weight CurrentWeight { get; private set; }
+    public Weight? CurrentWeight { get; private set; }
     
     public ConsultationStatus Status { get; private set; }
     
@@ -32,7 +30,7 @@ public class Consultation : AggregateRoot
         PatientId = patientId;
         Id = Guid.NewGuid();
         Status = ConsultationStatus.Open;
-        StatedAt = DateTime.UtcNow;
+        When = DateTime.UtcNow;
     }
 
     public void AdministerDrug(DrugId drugId, Dose dose)
@@ -54,7 +52,7 @@ public class Consultation : AggregateRoot
             throw new InvalidOperationException("Consultation has not been ended.");
         
         Status = ConsultationStatus.Closed;
-        EndedAt = DateTime.UtcNow;
+        When = new DateTimeRange(When.StartedAt, DateTime.UtcNow);
     }
 
     public void SetWeight(Weight weight)

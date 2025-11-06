@@ -1,7 +1,7 @@
 ﻿using Wpm.Clinic.Domain.ValuesObjects;
 using Wpm.SharedKernel;
 
-namespace Wpm.Clinic.Domain;
+namespace Wpm.Clinic.Domain.Entities;
 
 public class DrugAdministration : Entity
 {
@@ -14,5 +14,9 @@ public class DrugAdministration : Entity
         Id = Guid.NewGuid();
         DrugId = drugId;
         Dose = dose;
+    }
+
+    public DrugAdministration()
+    {
     }
 }

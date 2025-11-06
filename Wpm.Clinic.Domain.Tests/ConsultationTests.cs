@@ -1,4 +1,5 @@
-﻿using Wpm.Clinic.Domain.ValuesObjects;
+﻿using Wpm.Clinic.Domain.Entities;
+using Wpm.Clinic.Domain.ValuesObjects;
 using Xunit;
 
 namespace Wpm.Clinic.Domain.Tests;
@@ -17,7 +18,7 @@ public class ConsultationTests
     public void Consultation_ShouldNotHaveEndedTimestamp()
     {
         var consultation = new Consultation(Guid.NewGuid());
-        Assert.Null(consultation.EndedAt);
+        Assert.Null(consultation.When.EndedAt);
     }
     
     [Fact]
@@ -88,9 +89,19 @@ public class ConsultationTests
     public void Consultation_ShouldRegisterVitalSign()
     {
         var consultation = new Consultation(Guid.NewGuid());
-        IEnumerable<VitalSigns> vitalSigns = new []{new VitalSigns(22, 100, 120)};
+        IEnumerable<VitalSigns> vitalSigns = new []{new VitalSigns(DateTime.UtcNow, 22, 100, 120)};
         consultation.RegisterVitalSigns(vitalSigns);
         Assert.True(consultation.VitalSignsReadings.Count == 1);
         Assert.True(consultation.VitalSignsReadings.First() == vitalSigns.First());
     }
+
+    [Fact]
+    public void DateTimeRange_ShouldBeEquals()
+    {
+        var theDate = new DateTime(2027, 01, 01);
+        var dr1 = new DateTimeRange(theDate);
+        var dr2 = new DateTimeRange(theDate);
+        Assert.Equal(dr1, dr2);
+    }
+    
 }
