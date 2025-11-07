@@ -15,4 +15,6 @@ public record Weight
     {
         return new Weight(value);
     }
+    
+    public static implicit operator decimal(Weight value) => value.Value;
 }

@@ -1,4 +1,5 @@
-﻿using DDDProject.Domain.ValueObjects;
+﻿using DDDProject.Domain.Events;
+using DDDProject.Domain.ValueObjects;
 using Wpm.SharedKernel;
 
 namespace DDDProject.Domain.Entities;
@@ -11,7 +12,7 @@ public class Pet : Entity
 
     public string Color { get; init; }
 
-    public Weight Weight { get; private set; }
+    public Weight? Weight { get; private set; }
     
     public WeightClass WeightClass { get; private set; }
 
@@ -43,6 +44,7 @@ public class Pet : Entity
     {
         Weight = weight;
         SetWeightClass(breedService);
+        DomainEvents.PetWeightUpdated.Publish(new PetWeightUpdated(Id, weight));
     }
 
     private void SetWeightClass(IBreedService breedService)

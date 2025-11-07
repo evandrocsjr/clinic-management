@@ -7,8 +7,8 @@ namespace Wpm.Mangament.Api.Infrastructure;
 public class BreedService : IBreedService
 {
     public List<Breed> Breeds = [
-        new Breed(Guid.Parse("abc2131231-asdasd-213212"), "Raça 1", new WeightRange(20m, 30m), new WeightRange(20m, 40m)),
-        new Breed(Guid.Parse("abc2131231-asdasd-213213"), "Raça 2", new WeightRange(20m, 30m), new WeightRange(40m, 40m)),
+        new Breed(Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa7"), "Raça 1", new WeightRange(20m, 30m), new WeightRange(20m, 40m)),
+        new Breed(Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"), "Raça 2", new WeightRange(20m, 30m), new WeightRange(40m, 40m)),
     ];
 
     public Breed? GetBreed(Guid id)

@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddControllers();
 builder.Services.AddDbContext<ManagementDbContext>(options =>
 {
     options.UseSqlite("Data Source=WpmManagement.db");
@@ -16,6 +15,7 @@ builder.Services.AddScoped<IManagementRepository, ManagementRepository>();
 builder.Services.AddScoped<IBreedService, BreedService>();
 builder.Services.AddScoped<ICommandHandler<SetWeightCommand>, SetWeightCommandHandler>();
 builder.Services.AddScoped<ManagementAplicationService>();
+builder.Services.AddControllers();
 var app = builder.Build();
 app.EnsureDbIsCreated();
 
@@ -25,5 +25,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
 app.Run();
 

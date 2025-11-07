@@ -9,7 +9,7 @@ public class ManagementAplicationService(IBreedService breedService, ManagementD
 {
     public async Task Handle(CreatePetCommand command)
     {
-        var breedId = new BreedId(Guid.NewGuid(), breedService);
+        var breedId = new BreedId(command.BreedId, breedService);
 
         var newPet = new Pet(
                 command.Id,
@@ -19,6 +19,7 @@ public class ManagementAplicationService(IBreedService breedService, ManagementD
                 command.SexOfPet,
                 breedId
             );
+        newPet.SetWeight(20, breedService);
         await dbContext.Pets.AddAsync(newPet);
         await dbContext.SaveChangesAsync();
     }

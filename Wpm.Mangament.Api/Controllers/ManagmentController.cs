@@ -7,7 +7,7 @@ namespace Wpm.Mangament.Api.Controllers;
 [ApiController]
 public class ManagementController(
         ManagementAplicationService managementAplicationService,
-        SetWeightCommandHandler setWeightCommandHandler
+        ICommandHandler<SetWeightCommand> setWeightCommandHandler
     ) : ControllerBase
 {
     [HttpPost]
