@@ -22,4 +22,9 @@ public record Text {
     {
         return new Text(value);
     }
+
+    public static implicit operator string(Text value)
+    {
+        return value.Value;
+    }
 }

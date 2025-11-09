@@ -11,34 +11,7 @@ public class ClinicDbContext : DbContext
     {
     }
 
-    public DbSet<Consultation> Consultations { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<Consultation>(consultation =>
-        {
-            consultation.HasKey(c => c.Id);
-
-            consultation.Property(c => c.PatientId)
-                .HasConversion(c => c.Value, (c) => new PatientId(c));
-
-            consultation.OwnsOne(c => c.Diagnosis);
-            consultation.OwnsOne(c => c.Treatment);
-            consultation.OwnsOne(c => c.CurrentWeight);
-            consultation.OwnsOne(c => c.When);
-        });
-
-        modelBuilder.Entity<DrugAdministration>(drugAdministrations =>
-        {
-            drugAdministrations.HasKey(d => d.Id);
-
-            drugAdministrations.OwnsOne(d => d.Dose);
-
-            drugAdministrations.OwnsOne(d => d.DrugId);
-        });
-    }
+    public DbSet<ConsultationEventData> Consultations { get; set; }
     
 }
 public static class ManagementDbContextExtensions
@@ -51,3 +24,11 @@ public static class ManagementDbContextExtensions
         context.Database.CloseConnection();
     }
 }
+
+public record ConsultationEventData(
+    Guid Id,
+    string AggregateId,
+    string eventName,
+    string Data,
+    string AssemblyQualifiedName
+    );

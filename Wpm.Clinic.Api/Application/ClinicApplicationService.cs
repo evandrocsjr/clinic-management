@@ -1,8 +1,11 @@
-﻿using Wpm.Clinic.Api.Commands;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Wpm.Clinic.Api.Commands;
 using Wpm.Clinic.Api.Infrastructure;
 using Wpm.Clinic.Domain;
 using Wpm.Clinic.Domain.Entities;
 using Wpm.Clinic.Domain.ValuesObjects;
+using Wpm.SharedKernel;
 
 namespace Wpm.Clinic.Api.Application;
 
@@ -11,58 +14,98 @@ public class ClinicApplicationService(ClinicDbContext dbContext)
     public async Task<Guid> Handle(StartConsultationCommand command)
     {
         var newConsultation = new Consultation(command.PatientId);
-        await dbContext.Consultations.AddAsync(newConsultation);
-        await dbContext.SaveChangesAsync();
+        await SaveAsync(newConsultation);
         return newConsultation.Id;
     }
 
     public async Task Handle(EndConsultationCommand command)
     {
-        var consultationDb = await dbContext.Consultations.FindAsync(command.ConsultationId);
-        consultationDb.End();
+        var consultation = await LoadAsync(command.ConsultationId);
+        consultation.End();
         await dbContext.SaveChangesAsync();
     }
 
     public async Task Handle(SetDiagnosisCommand command)
     {
-        var consultationDb = await dbContext.Consultations.FindAsync(command.ConsultationId);
-        consultationDb.SetDiagnosis(command.Diagnosis);
+        var consultation = await LoadAsync(command.ConsultationId);
+        consultation.SetDiagnosis(command.Diagnosis);
         await dbContext.SaveChangesAsync();
     }
 
     public async Task Handle(SetTreatmentCommand command)
     {
-        var consultationDb = await dbContext.Consultations.FindAsync(command.ConsultationId);
-        consultationDb.SetTreatment(command.Treatment);
+        var consultation = await LoadAsync(command.ConsultationId);
+        consultation.SetTreatment(command.Treatment);
         await dbContext.SaveChangesAsync();
     }
     
     
     public async Task Handle(SetWeightCommand command)
     {
-        var consultationDb = await dbContext.Consultations.FindAsync(command.ConsultationId);
-        consultationDb.SetWeight(command.Weight);
+        var consultation = await LoadAsync(command.ConsultationId);
+        consultation.SetWeight(command.Weight);
         await dbContext.SaveChangesAsync();
     }
 
     public async Task Handle(AdministerDrugCommand command)
     {
-        var consultationDb = await dbContext.Consultations.FindAsync(command.ConsultationId);
-        consultationDb.AdministerDrug(command.DrugId, new Dose(command.Quantity, UnitOfMeasure.ml));
+        var consultation = await LoadAsync(command.ConsultationId);
+        consultation.AdministerDrug(command.DrugId, new Dose(command.Quantity, UnitOfMeasure.ml));
         await dbContext.SaveChangesAsync();
     }
 
     public async Task Handle(RegisterVitalSignsCommand command)
     {
-        var consultationDb = await dbContext.Consultations.FindAsync(command.ConsultationId);
-        consultationDb.RegisterVitalSigns(command.VitalSigns);
+        var consultation = await LoadAsync(command.ConsultationId);
+        consultation.RegisterVitalSigns(command.VitalSigns);
         await dbContext.SaveChangesAsync();
     }
     
     public async Task<IEnumerable<VitalSignsReading>> Handle(Guid consultationId)
     {
+        var consultation = await LoadAsync(consultationId);
+        return consultation.VitalSignsReadings.Select(v => new VitalSignsReading(v.ReadingDateTime, v.Temperature, v.HeartRate, v.RespiratoryRate));
+    }
+
+    public async Task SaveAsync(Consultation consultation)
+    {
+        var aggregateId = $"Consultation-{consultation.Id}";
+        var changes = consultation.GetChanges
+            .Select(e => new ConsultationEventData(Guid.NewGuid(),
+                aggregateId,
+                e.GetType().Name,
+                JsonConvert.SerializeObject(e),
+                e.GetType().AssemblyQualifiedName));
+        if (!changes.Any())
+        {
+            return;
+        }
+
+        foreach (var change in changes)
+        {
+            await dbContext.Consultations.AddAsync(change);
+        }
         
-        var consultationDb = await dbContext.Consultations.FindAsync(consultationId);
-        return consultationDb.VitalSignsReadings.Select(v => new VitalSignsReading(v.ReadingDateTime, v.Temperature, v.HeartRate, v.RespiratoryRate));
+        await dbContext.SaveChangesAsync();
+        consultation.ClearChanges();
+    }
+
+    public async Task<Consultation> LoadAsync(Guid id)
+    {
+        var aggregateId = $"Consultation-{id}";
+        var result = await dbContext.Consultations
+            .Where(a => a.AggregateId == aggregateId)
+            .ToListAsync();
+
+        var domainEvents = result.Select(e =>
+        {
+            var assemblyQualifiedName = e.AssemblyQualifiedName;
+            var eventType = Type.GetType(assemblyQualifiedName);
+            var data = JsonConvert.DeserializeObject(e.Data, eventType!);
+            return data as IDomainEvent;
+        });
+
+        var aggregate = new Consultation(domainEvents!);
+        return aggregate;
     }
 }

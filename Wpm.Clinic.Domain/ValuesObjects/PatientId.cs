@@ -16,4 +16,9 @@ public class PatientId
     {
         return new PatientId(value);
     }
+
+    public static implicit operator Guid(PatientId value)
+    {
+        return value.Value;
+    }
 }

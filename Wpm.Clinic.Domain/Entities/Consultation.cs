@@ -1,4 +1,5 @@
-﻿using Wpm.Clinic.Domain.ValuesObjects;
+﻿using Wpm.Clinic.Domain.Events;
+using Wpm.Clinic.Domain.ValuesObjects;
 using Wpm.SharedKernel;
 
 namespace Wpm.Clinic.Domain.Entities;
@@ -14,7 +15,7 @@ public class Consultation : AggregateRoot
     
     public DateTimeRange When { get; private set; }
     
-    public PatientId PatientId { get; init; }
+    public PatientId PatientId { get; private set; }
     
     public Weight? CurrentWeight { get; private set; }
     
@@ -27,10 +28,16 @@ public class Consultation : AggregateRoot
 
     public Consultation(PatientId patientId)
     {
-        PatientId = patientId;
-        Id = Guid.NewGuid();
-        Status = ConsultationStatus.Open;
-        When = DateTime.UtcNow;
+        ApplyDomainEvent(new ConsultationStarted(
+            Guid.NewGuid(),
+            patientId,
+            DateTime.UtcNow
+            ));
+    }
+
+    public Consultation(IEnumerable<IDomainEvent> domainEvents)
+    {
+        Load(domainEvents);
     }
 
     public void AdministerDrug(DrugId drugId, Dose dose)
@@ -48,35 +55,62 @@ public class Consultation : AggregateRoot
     
     public void End()
     {
-        if (CurrentWeight == null || Diagnosis == null || Treatment == null)
-            throw new InvalidOperationException("Consultation has not been ended.");
-        
-        Status = ConsultationStatus.Closed;
-        When = new DateTimeRange(When.StartedAt, DateTime.UtcNow);
+        ApplyDomainEvent(new ConsultationEnded(Id, DateTime.UtcNow));
     }
 
     public void SetWeight(Weight weight)
     {
-        ValidateConsultationStatus();
-        CurrentWeight = weight;
+        ApplyDomainEvent(new WeightUpdated(Id, weight));
     }
 
     public void SetDiagnosis(Text diagnosis)
     {
-        ValidateConsultationStatus();
-        Diagnosis = diagnosis;
+        ApplyDomainEvent(new DiagnosisUpdated(Id, diagnosis));
+        
     }
 
     public void SetTreatment(Text treatment)
     {
-        ValidateConsultationStatus();
-        Treatment = treatment;
+        ApplyDomainEvent(new TreatmentStarted(Id, treatment));
     }
 
     private void ValidateConsultationStatus()
     {
         if (Status == ConsultationStatus.Closed)
             throw new InvalidOperationException("Consultation is already closed");
+    }
+
+    protected override void ChangeStateByUsingDomainEvent(IDomainEvent domainEvent)
+    {
+        switch (domainEvent)
+        {
+            case ConsultationStarted e:
+                Id = e.Id;
+                PatientId = e.PatientId;
+                When = e.StartedAt;
+                Status = ConsultationStatus.Open;
+                break;
+            case DiagnosisUpdated e:
+                ValidateConsultationStatus();
+                Diagnosis = e.Diagnosis;
+                break;
+            case TreatmentStarted e:
+                ValidateConsultationStatus();
+                Treatment = e.Treatment;
+                break;
+            case WeightUpdated e:
+                ValidateConsultationStatus();
+                CurrentWeight = e.Weight;
+                break;
+            case ConsultationEnded e:
+                ValidateConsultationStatus();
+                if (CurrentWeight == null || Diagnosis == null || Treatment == null)
+                    throw new InvalidOperationException("Consultation has not been ended.");
+        
+                Status = ConsultationStatus.Closed;
+                When = new DateTimeRange(When.StartedAt, DateTime.UtcNow);
+                break;
+        }
     }
 }
 
